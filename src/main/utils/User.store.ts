@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import xlsx from 'xlsx';
 
-import { User } from '../interfaces/user.interface';
+import { User } from '../../interfaces/user.interface';
 
 export default class UserStore {
   public searchForUser(phone: string): User[] {

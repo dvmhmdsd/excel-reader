@@ -1,5 +1,5 @@
 import DialogWidget from '../widgets/dialog';
-import UserStore from '../../utils/User.store';
+import UserStore from '../utils/User.store';
 
 export default async () => {
   const dialog = new DialogWidget();
