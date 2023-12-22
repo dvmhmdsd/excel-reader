@@ -19,9 +19,10 @@ export default class UserStore {
     const fileData = await fs.readFile(this.jsonFilePath, {
       encoding: 'utf-8',
     });
-    const storedUsers = JSON.parse(fileData);
 
-    return storedUsers as User[];
+    const users: User[] = fileData ? JSON.parse(fileData) : [];
+
+    return users;
   }
 
   public async saveDataOfFiles(filePaths: string[]) {
@@ -38,9 +39,7 @@ export default class UserStore {
   private getDataFromSheet(filePath: string): User[] {
     const { SheetNames, Sheets } = xlsx.readFile(filePath);
 
-    return JSON.parse(
-      xlsx.utils.sheet_to_json(Sheets[SheetNames[0]]) as unknown as string,
-    );
+    return xlsx.utils.sheet_to_json(Sheets[SheetNames[0]]) as User[];
   }
 
   private async saveData(users: User[]) {
