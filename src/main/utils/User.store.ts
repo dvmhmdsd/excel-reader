@@ -4,7 +4,7 @@ import path from 'path';
 import xlsx from 'xlsx';
 
 import { User } from '../../interfaces/user.interface';
-import { MAIN_KEY } from '../constants/main-key.constant';
+import { MAIN_KEY } from '../../constants/main-key.constant';
 
 export default class UserStore {
   jsonFilePath = path.join(__dirname, './users.json');
