@@ -12,15 +12,15 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import MenuBuilder from './widgets/menu';
 import { resolveHtmlPath } from './util';
-import { User } from '../interfaces/user.interface';
 import saveData from './controllers/saveData.controller';
+import searchForUser from './controllers/search.controller';
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('search', async (event, arg: User) => {
-  // TODO: Add search logic here
-  console.log(arg);
-  event.reply('search', () => {});
+ipcMain.on('search', async (event, query: string) => {
+  const users = await searchForUser(query);
+
+  event.reply('search', users);
 });
 
 ipcMain.on('save-users', async (event) => {

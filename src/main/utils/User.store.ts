@@ -4,11 +4,15 @@ import path from 'path';
 import xlsx from 'xlsx';
 
 import { User } from '../../interfaces/user.interface';
+import { MAIN_KEY } from '../constants/main-key.constant';
 
 export default class UserStore {
-  public searchForUser(phone: string): User[] {
-    console.log(phone);
-    return [] as User[];
+  jsonFilePath = path.join(__dirname, './users.json');
+
+  public async searchForUser(query: string): Promise<User[]> {
+    const storedUsers = await this.getStoredUsers();
+
+    return storedUsers.filter((user: User) => user[MAIN_KEY] === query);
   }
 
   public async saveDataOfFiles(filePaths: string[]) {
@@ -31,14 +35,21 @@ export default class UserStore {
   }
 
   private async saveData(users: User[]) {
-    const jsonFilePath = path.join(__dirname, './users.json');
-    const fileData = await fs.readFile(jsonFilePath, { encoding: 'utf-8' });
-    const storedUsers = JSON.parse(fileData);
+    const storedUsers = await this.getStoredUsers();
 
     users.forEach((user: User) => {
       storedUsers.push(user);
     });
 
-    fs.writeFile(jsonFilePath, JSON.stringify(storedUsers));
+    fs.writeFile(this.jsonFilePath, JSON.stringify(storedUsers));
+  }
+
+  private async getStoredUsers(): Promise<User[]> {
+    const fileData = await fs.readFile(this.jsonFilePath, {
+      encoding: 'utf-8',
+    });
+    const storedUsers = JSON.parse(fileData);
+
+    return storedUsers as User[];
   }
 }
