@@ -11,8 +11,8 @@ export default class UserStore {
 
   public async searchForUser(query: string): Promise<User[]> {
     const storedUsers = await this.getStoredUsers();
-
-    return storedUsers.filter((user: User) => user[MAIN_KEY] === query);
+    // eslint-disable-next-line eqeqeq
+    return storedUsers.filter((user: User) => user[MAIN_KEY] == query);
   }
 
   private async getStoredUsers(): Promise<User[]> {

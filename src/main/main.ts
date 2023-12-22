@@ -11,7 +11,7 @@ let mainWindow: BrowserWindow | null = null;
 ipcMain.on('search', async (event, query: string) => {
   const users = await searchForUser(query);
 
-  event.reply('search', users);
+  event.reply('search-results', users);
 });
 
 ipcMain.on('save-users', async (event) => {
