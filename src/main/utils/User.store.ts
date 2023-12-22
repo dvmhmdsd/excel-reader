@@ -15,6 +15,15 @@ export default class UserStore {
     return storedUsers.filter((user: User) => user[MAIN_KEY] === query);
   }
 
+  private async getStoredUsers(): Promise<User[]> {
+    const fileData = await fs.readFile(this.jsonFilePath, {
+      encoding: 'utf-8',
+    });
+    const storedUsers = JSON.parse(fileData);
+
+    return storedUsers as User[];
+  }
+
   public async saveDataOfFiles(filePaths: string[]) {
     const users: User[] = [];
 
@@ -42,14 +51,5 @@ export default class UserStore {
     });
 
     fs.writeFile(this.jsonFilePath, JSON.stringify(storedUsers));
-  }
-
-  private async getStoredUsers(): Promise<User[]> {
-    const fileData = await fs.readFile(this.jsonFilePath, {
-      encoding: 'utf-8',
-    });
-    const storedUsers = JSON.parse(fileData);
-
-    return storedUsers as User[];
   }
 }
