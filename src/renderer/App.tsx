@@ -3,6 +3,8 @@ import Home from './pages/Home';
 import Upload from './pages/Upload';
 import Search from './pages/Search';
 
+import './App.css';
+
 export default function App() {
   return (
     <Router>

@@ -4,8 +4,10 @@ export default function Upload() {
   };
 
   return (
-    <button onClick={dispatchUploadEvent} type="button">
-      Upload Data
-    </button>
+    <div className="centered-container">
+      <button onClick={dispatchUploadEvent} type="button">
+        تحميل
+      </button>
+    </div>
   );
 }

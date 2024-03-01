@@ -1,2 +1,3 @@
 // eslint-disable-next-line import/prefer-default-export
-export const MAIN_KEY = 'Phone';
+export const SEARCH_KEY = 'Phone';
+export const RENDER_KEY = 'Name';

@@ -1,6 +1,6 @@
-import { MAIN_KEY } from '../constants/main-key.constant';
+import { SEARCH_KEY, RENDER_KEY } from '../constants/main-key.constant';
 
 export interface User {
-  name: string;
-  [MAIN_KEY]: string;
+  [RENDER_KEY]: string;
+  [SEARCH_KEY]: string;
 }

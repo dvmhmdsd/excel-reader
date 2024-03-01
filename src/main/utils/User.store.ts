@@ -4,7 +4,7 @@ import path from 'path';
 import xlsx from 'xlsx';
 
 import { User } from '../../interfaces/user.interface';
-import { MAIN_KEY } from '../../constants/main-key.constant';
+import { SEARCH_KEY } from '../../constants/main-key.constant';
 
 export default class UserStore {
   jsonFilePath = path.join(__dirname, './users.json');
@@ -12,7 +12,7 @@ export default class UserStore {
   public async searchForUser(query: string): Promise<User[]> {
     const storedUsers = await this.getStoredUsers();
     // eslint-disable-next-line eqeqeq
-    return storedUsers.filter((user: User) => user[MAIN_KEY] == query);
+    return storedUsers.filter((user: User) => user[SEARCH_KEY] == query);
   }
 
   private async getStoredUsers(): Promise<User[]> {
