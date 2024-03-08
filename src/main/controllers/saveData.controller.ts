@@ -1,6 +1,6 @@
 import log from 'electron-log/main';
-import UserStore from '@/main/utils/User.store';
-import DialogWidget from '@/main/widgets/dialog';
+import UserStore from '../utils/User.store';
+import DialogWidget from '../widgets/dialog';
 
 export default async () => {
   let filePaths: string[] = [];

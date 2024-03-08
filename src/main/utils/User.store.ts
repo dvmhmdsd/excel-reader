@@ -6,8 +6,8 @@ import { app } from 'electron';
 import log from 'electron-log';
 
 import { User } from '@/interfaces/user.interface';
-import { RENDER_KEY, SEARCH_KEY } from '@/constants/main-key.constant';
-import { DEV_PATH, PROD_PATH } from '@/constants/json-path.constant';
+import { RENDER_KEY, SEARCH_KEY } from '../../constants/main-key.constant';
+import { DEV_PATH, PROD_PATH } from '../../constants/json-path.constant';
 
 export default class UserStore {
   jsonFilePath = path.join(__dirname, app.isPackaged ? PROD_PATH : DEV_PATH);
@@ -38,11 +38,12 @@ export default class UserStore {
 
   public async saveDataOfFiles(filePaths: string[]) {
     const users: User[] = [];
-    filePaths.forEach(async (filePath: string) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const filePath of filePaths) {
+      // eslint-disable-next-line no-await-in-loop
       const returnedUsersList = await this.getDataFromSheet(filePath);
       users.push(...returnedUsersList);
-    });
-
+    }
     await this.saveData(users);
   }
 
@@ -94,7 +95,7 @@ export default class UserStore {
     });
 
     try {
-      fs.writeFile(this.jsonFilePath, JSON.stringify(storedUsers));
+      await fs.writeFile(this.jsonFilePath, JSON.stringify(storedUsers));
     } catch (error) {
       log.error(
         'UserStore.ts (saveData): An error occurred while saving users',

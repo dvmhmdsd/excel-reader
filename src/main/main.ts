@@ -2,8 +2,8 @@
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import log from 'electron-log/main';
-import saveData from '@/main/controllers/saveData.controller';
-import searchForUser from '@/main/controllers/search.controller';
+import saveData from './controllers/saveData.controller';
+import searchForUser from './controllers/search.controller';
 import MenuBuilder from './widgets/menu';
 import { resolveHtmlPath } from './util';
 

@@ -1,4 +1,4 @@
-import UserStore from '@/main/utils/User.store';
+import UserStore from '../utils/User.store';
 
 export default async (phoneNumber: string) => {
   const userStore = new UserStore();
