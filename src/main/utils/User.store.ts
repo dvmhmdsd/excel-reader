@@ -5,7 +5,7 @@ import * as ExcelJS from 'exceljs';
 import { app } from 'electron';
 import log from 'electron-log';
 
-import { User } from '@/interfaces/user.interface';
+import { User } from '../../interfaces/user.interface';
 import { RENDER_KEY, SEARCH_KEY } from '../../constants/main-key.constant';
 import { DEV_PATH, PROD_PATH } from '../../constants/json-path.constant';
 
