@@ -1,23 +1,52 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import log from 'electron-log/main';
+import saveData from '@/main/controllers/saveData.controller';
+import searchForUser from '@/main/controllers/search.controller';
 import MenuBuilder from './widgets/menu';
 import { resolveHtmlPath } from './util';
-import saveData from './controllers/saveData.controller';
-import searchForUser from './controllers/search.controller';
+
+function computeLogFileNameForToday() {
+  const date = new Date();
+  return `${date.getFullYear()}-${date.getMonth()}-${
+    date.getDate() + 1
+  }-main.log`;
+}
+
+log.initialize({ preload: true });
+log.transports.file.fileName = computeLogFileNameForToday();
 
 let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('search', async (event, query: string) => {
-  const users = await searchForUser(query);
+  try {
+    const users = await searchForUser(query);
 
-  event.reply('search-results', users);
+    event.reply('search-results', users);
+  } catch (error) {
+    log.info(
+      'main.ts (searchForUser): An error occurred while searching for users',
+      error,
+    );
+    event.reply('error', {
+      msg: 'An error occurred while searching for users',
+      error,
+    });
+  }
 });
 
 ipcMain.on('save-users', async (event) => {
-  await saveData();
-
-  event.reply('users-saved');
+  try {
+    await saveData();
+    event.reply('users-saved');
+  } catch (error) {
+    log.info('main.ts (saveData): An error occurred while saving users', error);
+    event.reply('error', {
+      msg: 'An error occurred while saving users, please try again',
+      error,
+    });
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {

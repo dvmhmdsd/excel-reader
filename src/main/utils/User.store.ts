@@ -1,13 +1,16 @@
 /* eslint-disable class-methods-use-this */
-import fs from 'fs/promises';
 import path from 'path';
-import xlsx from 'xlsx';
+import fs from 'fs/promises';
+import * as ExcelJS from 'exceljs';
+import { app } from 'electron';
+import log from 'electron-log';
 
-import { User } from '../../interfaces/user.interface';
-import { SEARCH_KEY } from '../../constants/main-key.constant';
+import { User } from '@/interfaces/user.interface';
+import { RENDER_KEY, SEARCH_KEY } from '@/constants/main-key.constant';
+import { DEV_PATH, PROD_PATH } from '@/constants/json-path.constant';
 
 export default class UserStore {
-  jsonFilePath = path.join(__dirname, './users.json');
+  jsonFilePath = path.join(__dirname, app.isPackaged ? PROD_PATH : DEV_PATH);
 
   public async searchForUser(query: string): Promise<User[]> {
     const storedUsers = await this.getStoredUsers();
@@ -16,30 +19,71 @@ export default class UserStore {
   }
 
   private async getStoredUsers(): Promise<User[]> {
-    const fileData = await fs.readFile(this.jsonFilePath, {
-      encoding: 'utf-8',
-    });
+    try {
+      const fileData = await fs.readFile(this.jsonFilePath, {
+        encoding: 'utf-8',
+      });
 
-    const users: User[] = fileData ? JSON.parse(fileData) : [];
+      const users: User[] = fileData ? JSON.parse(fileData) : [];
 
-    return users;
+      return users;
+    } catch (error) {
+      log.info(
+        'UserStore.ts (getStoredUsers): An error occurred while reading path of json file',
+        error,
+      );
+      throw new Error('An error occurred while reading path of json file');
+    }
   }
 
   public async saveDataOfFiles(filePaths: string[]) {
     const users: User[] = [];
-
-    filePaths.forEach((filePath: string) => {
-      const returnedUsersList = this.getDataFromSheet(filePath);
+    filePaths.forEach(async (filePath: string) => {
+      const returnedUsersList = await this.getDataFromSheet(filePath);
       users.push(...returnedUsersList);
     });
 
     await this.saveData(users);
   }
 
-  private getDataFromSheet(filePath: string): User[] {
-    const { SheetNames, Sheets } = xlsx.readFile(filePath);
+  private async getDataFromSheet(filePath: string): Promise<User[]> {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+      return this.mapWorkbookDataIntoListOfUsers(workbook);
+    } catch (error) {
+      log.error(
+        'UserStore.ts (getDataFromSheet): An error occurred while reading sheet',
+        error?.toString(),
+      );
+      throw new Error('An error occurred while reading sheet');
+    }
+  }
 
-    return xlsx.utils.sheet_to_json(Sheets[SheetNames[0]]) as User[];
+  private mapWorkbookDataIntoListOfUsers(workbook: ExcelJS.Workbook) {
+    const usersList: Array<User> = [];
+
+    workbook.worksheets.forEach((sheet) => {
+      const firstRow = sheet.getRow(1);
+      if (!firstRow.cellCount) return;
+      const keys = firstRow.values;
+      sheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) return;
+        const { values } = row;
+        const user: User = {
+          [RENDER_KEY]: '',
+          [SEARCH_KEY]: '',
+        };
+        (keys as string[]).forEach((_key, index) => {
+          (user as any)[(keys as string[])[index]] = (values as string[])[
+            index
+          ];
+        });
+        usersList.push(user);
+      });
+    });
+
+    return usersList;
   }
 
   private async saveData(users: User[]) {
@@ -49,6 +93,14 @@ export default class UserStore {
       storedUsers.push(user);
     });
 
-    fs.writeFile(this.jsonFilePath, JSON.stringify(storedUsers));
+    try {
+      fs.writeFile(this.jsonFilePath, JSON.stringify(storedUsers));
+    } catch (error) {
+      log.error(
+        'UserStore.ts (saveData): An error occurred while saving users',
+        error?.toString(),
+      );
+      throw new Error('An error occurred while saving users');
+    }
   }
 }

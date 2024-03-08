@@ -8,7 +8,7 @@ export default class DialogWidget {
       filters: [
         {
           name: 'All Files',
-          extensions: ['xlsx', 'xlsm', 'xlsb', 'xltx'],
+          extensions: ['xlsx'],
         },
       ],
     });
